@@ -3,933 +3,302 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Portfolio – Overworld Edition</title>
+<title>Nat Pianthum – Portfolio</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
-
   :root {
-    --grass:   #5D9E3F;
-    --dirt:    #8B5E3C;
-    --stone:   #888888;
-    --wood:    #A0522D;
-    --leaf:    #3A7D44;
-    --sky:     #87CEEB;
-    --sun:     #FFD700;
-    --sand:    #D4B483;
-    --water:   #2E86AB;
-    --coal:    #222222;
-    --cream:   #FFF8E7;
-    --white:   #FFFFFF;
-    --shadow:  rgba(0,0,0,0.5);
-    --pixel:   4px;
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--sky);
-    font-family: 'VT323', monospace;
-    font-size: 20px;
-    color: var(--coal);
-    image-rendering: pixelated;
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' fill='%235D9E3F' rx='0'/%3E%3Crect x='4' y='4' width='8' height='8' fill='%238B5E3C'/%3E%3C/svg%3E") 8 8, crosshair;
-  }
-
-  /* ===== PIXEL UTILITY ===== */
-  .pixel-border {
-    box-shadow:
-      0 -4px 0 0 #000,
-      0  4px 0 0 #000,
-     -4px 0 0 0 #000,
-      4px 0 0 0 #000,
-      inset 0 -4px 0 0 rgba(0,0,0,0.3),
-      inset 0  4px 0 0 rgba(255,255,255,0.3);
-    image-rendering: pixelated;
-  }
-
-  .pixel-btn {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    padding: 12px 20px;
-    background: var(--grass);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    display: inline-block;
-    text-decoration: none;
-    box-shadow:
-      0 6px 0 #3a6b27,
-      inset 0 2px 0 rgba(255,255,255,0.3);
-    transition: transform 0.08s, box-shadow 0.08s;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .pixel-btn:hover {
-    transform: translateY(3px);
-    box-shadow: 0 3px 0 #3a6b27, inset 0 2px 0 rgba(255,255,255,0.3);
-  }
-  .pixel-btn:active {
-    transform: translateY(6px);
-    box-shadow: 0 0px 0 #3a6b27;
-  }
-  .pixel-btn.stone {
-    background: var(--stone);
-    box-shadow: 0 6px 0 #555, inset 0 2px 0 rgba(255,255,255,0.2);
-  }
-  .pixel-btn.stone:hover { box-shadow: 0 3px 0 #555, inset 0 2px 0 rgba(255,255,255,0.2); }
-
-  /* ===== ANIMATED SKY BG ===== */
-  .sky-bg {
-    position: fixed; inset: 0; z-index: -2;
-    background: linear-gradient(180deg, #87CEEB 0%, #b8e4f9 60%, #d4f0c0 100%);
-  }
-
-  /* Clouds */
-  .clouds {
-    position: fixed; top: 0; left: 0; width: 200%; height: 200px; z-index: -1;
-    animation: clouds-move 60s linear infinite;
-  }
-  @keyframes clouds-move { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-  .cloud {
-    position: absolute;
-    background: #fff;
-    image-rendering: pixelated;
-  }
-
-  /* Pixel sun */
-  .sun {
-    position: fixed; top: 30px; right: 80px; z-index: -1;
-    width: 64px; height: 64px;
-    background: var(--sun);
-    box-shadow: 0 0 0 4px #fff, 0 0 0 8px var(--sun), 0 0 40px 10px rgba(255,215,0,0.4);
-    animation: sun-pulse 4s ease-in-out infinite;
-  }
-  @keyframes sun-pulse {
-    0%,100% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px var(--sun), 0 0 40px 10px rgba(255,215,0,0.4); }
-    50%      { box-shadow: 0 0 0 4px #fff, 0 0 0 8px var(--sun), 0 0 60px 20px rgba(255,215,0,0.6); }
-  }
-
-  /* ===== NAVBAR ===== */
-  nav {
-    position: fixed; top: 0; width: 100%; z-index: 100;
-    background: var(--dirt);
-    border-bottom: 4px solid #000;
-    box-shadow: 0 4px 0 #5a3820;
-    padding: 0 32px;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 56px;
-  }
-  .nav-logo {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
-    color: var(--sun);
-    text-shadow: 2px 2px 0 #000;
-    letter-spacing: 2px;
-  }
-  .nav-links { display: flex; gap: 4px; }
-  .nav-links a {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 7px;
-    color: #fff;
-    text-decoration: none;
-    padding: 8px 10px;
-    background: rgba(0,0,0,0.2);
-    border: 2px solid transparent;
-    transition: all 0.15s;
-    letter-spacing: 1px;
-  }
-  .nav-links a:hover {
-    background: var(--grass);
-    border-color: var(--sun);
-    color: var(--sun);
-  }
-  /* Hotbar pip */
-  .nav-hotbar {
-    display: flex; gap: 2px;
-  }
-  .hotbar-slot {
-    width: 36px; height: 36px;
-    background: rgba(0,0,0,0.3);
-    border: 3px solid #555;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
-  .hotbar-slot.active { border-color: var(--sun); }
-
-  /* ===== HERO ===== */
-  #hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding-top: 56px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-content {
-    text-align: center;
-    z-index: 2;
-    animation: hero-drop 0.6s cubic-bezier(0.22,0.61,0.36,1) both;
-  }
-  @keyframes hero-drop { from { opacity:0; transform: translateY(-40px); } to { opacity:1; transform: translateY(0); } }
-
-  /* Steve-style pixel avatar */
-  .pixel-avatar {
-    width: 260px; height: 140px;
-    margin: 0 auto 24px;
-    image-rendering: pixelated;
-    position: relative;
-    animation: avatar-float 3s ease-in-out infinite;
-  }
-  @keyframes avatar-float {
-    0%,100% { transform: translateY(0px); }
-    50%      { transform: translateY(-10px); }
-  }
-
-  .avatar-svg { width: 128px; height: 128px; }
-
-  .hero-name {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(18px, 4vw, 32px);
-    color: #fff;
-    text-shadow: 4px 4px 0 #000, -1px -1px 0 #000;
-    margin-bottom: 16px;
-    letter-spacing: 2px;
-  }
-  .hero-title {
-    font-family: 'VT323', monospace;
-    font-size: 28px;
-    color: var(--sun);
-    text-shadow: 2px 2px 0 #000;
-    margin-bottom: 32px;
-    letter-spacing: 3px;
-  }
-  .hero-xp {
-    display: flex; align-items: center; gap: 12px;
-    justify-content: center; margin-bottom: 32px;
-  }
-  .xp-bar {
-    width: 220px; height: 16px;
-    background: #222;
-    border: 2px solid #000;
-    position: relative; overflow: hidden;
-  }
-  .xp-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #7FE620, #A8F040);
-    width: 0%;
-    transition: width 1.5s ease 0.8s;
-    box-shadow: 0 0 8px #7FE620;
-  }
-  .xp-label {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 7px;
-    color: #7FE620;
-  }
-
-  .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-
-  /* Ground strip */
-  .ground {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-  }
-  .ground-grass {
-    height: 24px;
-    background: var(--grass);
-    border-top: 4px solid #000;
-  }
-  .ground-dirt {
-    height: 48px;
-    background: var(--dirt);
-    background-image:
-      repeating-linear-gradient(
-        90deg,
-        rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 16px,
-        transparent 16px, transparent 32px
-      );
-  }
-  .ground-stone {
-    height: 16px;
-    background: var(--stone);
-  }
-
-  /* Trees */
-  .tree {
-    position: absolute; bottom: 88px;
-    display: flex; flex-direction: column; align-items: center;
-    image-rendering: pixelated;
-  }
-  .tree-leaves {
-    width: 64px; height: 64px;
-    background: var(--leaf);
-    box-shadow: 4px 4px 0 #2d6135, -4px 4px 0 #2d6135;
-    position: relative;
-  }
-  .tree-leaves::before {
-    content: '';
-    position: absolute; top: -24px; left: 8px;
-    width: 48px; height: 32px;
-    background: #4a9855;
-    box-shadow: 4px 4px 0 #2d6135;
-  }
-  .tree-trunk {
-    width: 16px; height: 40px;
-    background: var(--wood);
-    box-shadow: inset 2px 0 0 rgba(0,0,0,0.2);
-  }
-
-  /* Pixel birds */
-  .birds { position: absolute; top: 80px; left: 0; width: 100%; z-index: 1; }
-  .bird {
-    position: absolute;
-    font-size: 16px;
-    animation: bird-fly linear infinite;
-  }
-  @keyframes bird-fly {
-    from { transform: translateX(-60px); }
-    to   { transform: translateX(110vw); }
-  }
-
-  /* ===== SECTION COMMON ===== */
-  section {
-    padding: 80px 0 60px;
-    position: relative;
-  }
-
-  .section-block {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
-  .section-title {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(12px, 2vw, 18px);
-    margin-bottom: 40px;
-    display: flex; align-items: center; gap: 16px;
-    text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
-  }
-  .section-title::after {
-    content: '';
-    flex: 1; height: 4px;
-    background: currentColor;
-    opacity: 0.3;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.2);
-  }
-  .title-icon {
-    width: 32px; height: 32px;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 20px;
-  }
-
-  /* ===== ABOUT ===== */
-  #about { background: rgba(255,255,255,0.15); }
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.6fr;
-    gap: 40px;
-    align-items: start;
-  }
-  .about-card {
-    background: var(--cream);
-    padding: 24px;
-    border: 4px solid #000;
-    box-shadow: 6px 6px 0 #000;
-    position: relative;
-  }
-  .about-card::before {
-    content: '';
-    position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px;
-    border: 4px solid var(--grass);
-    pointer-events: none;
-    z-index: -1;
-  }
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 2px dotted #ccc;
-    font-size: 17px;
-  }
-  .stat-row:last-child { border-bottom: none; }
-  .stat-label { color: #555; font-family: 'Press Start 2P', monospace; font-size: 7px; }
-  .stat-val { color: var(--grass); font-weight: bold; }
-  .about-text {
-    font-size: 21px;
-    line-height: 1.6;
-    color: #333;
-  }
-  .about-text p { margin-bottom: 16px; }
-  .hearts { color: #e74c3c; letter-spacing: 3px; font-size: 22px; }
-
-  /* Health bar */
-  .health-bar { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 16px; }
-  .heart { font-size: 18px; }
-
-  /* ===== SKILLS ===== */
-  #skills { background: rgba(139,94,60,0.08); }
-  .skills-inventory {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
-  }
-  .inventory-slot {
-    background: #c8b89a;
-    border: 4px solid #000;
-    box-shadow: inset 2px 2px 0 rgba(255,255,255,0.4), inset -2px -2px 0 rgba(0,0,0,0.3), 4px 4px 0 #000;
-    padding: 16px;
-    position: relative;
-    cursor: default;
-    transition: transform 0.1s;
-  }
-  .inventory-slot:hover {
-    transform: scale(1.04);
-    z-index: 2;
-  }
-  .slot-icon { font-size: 32px; display: block; margin-bottom: 8px; }
-  .slot-name { font-family: 'Press Start 2P', monospace; font-size: 7px; display: block; margin-bottom: 10px; }
-  .slot-bar {
-    height: 8px;
-    background: #555;
-    border: 2px solid #000;
-  }
-  .slot-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #7FE620, #A8F040);
-    width: 0;
-    transition: width 1.2s ease;
-    box-shadow: 0 0 6px #7FE620;
-  }
-  .slot-fill.blue { background: linear-gradient(90deg, #2E86AB, #54c6f0); box-shadow: 0 0 6px #2E86AB; }
-  .slot-fill.gold { background: linear-gradient(90deg, #FFD700, #FFEE77); box-shadow: 0 0 6px #FFD700; }
-  .slot-fill.red  { background: linear-gradient(90deg, #e74c3c, #ff7675); box-shadow: 0 0 6px #e74c3c; }
-  .slot-level {
-    position: absolute; top: 6px; right: 8px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 7px;
-    color: #FFD700;
-    text-shadow: 1px 1px 0 #000;
-  }
-  .slot-durability {
-    font-size: 13px;
-    color: #555;
-    margin-top: 6px;
-    display: block;
-  }
-
-  /* ===== PROJECTS ===== */
-  #projects { background: rgba(46,134,171,0.07); }
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-  }
-  .project-chest {
-    background: var(--wood);
-    border: 4px solid #000;
-    box-shadow: 6px 6px 0 #000;
-    overflow: hidden;
-    transition: transform 0.15s;
-    cursor: pointer;
-  }
-  .project-chest:hover { transform: translateY(-6px); }
-  .chest-lid {
-    background: #8B4513;
-    padding: 16px;
-    border-bottom: 4px solid #000;
-    display: flex; align-items: center; gap: 12px;
-    position: relative;
-  }
-  .chest-lock {
-    width: 24px; height: 24px;
-    background: var(--sun);
-    border: 3px solid #000;
-    box-shadow: inset 0 0 0 3px rgba(0,0,0,0.2);
-    position: absolute; right: 16px;
-  }
-  .chest-icon { font-size: 24px; }
-  .chest-title {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    color: #fff;
-    text-shadow: 1px 1px 0 #000;
-  }
-  .chest-body {
-    background: #c8973d;
-    padding: 16px;
-    background-image:
-      repeating-linear-gradient(
-        45deg,
-        rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 4px,
-        transparent 4px, transparent 8px
-      );
-  }
-  .chest-desc { font-size: 18px; line-height: 1.5; color: #3a1f00; margin-bottom: 12px; }
-  .chest-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-  .tag {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 6px;
-    padding: 4px 8px;
-    background: var(--grass);
-    color: #fff;
-    border: 2px solid #000;
-    box-shadow: 2px 2px 0 #000;
-  }
-  .tag.blue { background: var(--water); }
-  .tag.gold { background: #b8860b; }
-
-  /* ===== EXPERIENCE ===== */
-  #experience { background: rgba(93,158,63,0.06); }
-  .timeline { position: relative; padding-left: 32px; }
-  .timeline::before {
-    content: '';
-    position: absolute; left: 8px; top: 0; bottom: 0;
-    width: 8px;
-    background: repeating-linear-gradient(
-      180deg,
-      var(--grass) 0px, var(--grass) 16px,
-      var(--dirt) 16px, var(--dirt) 32px
-    );
-    border-left: 2px solid #000;
-    border-right: 2px solid #000;
-  }
-  .exp-entry {
-    position: relative;
-    margin-bottom: 32px;
-    background: var(--cream);
-    border: 4px solid #000;
-    box-shadow: 6px 6px 0 #000;
-    padding: 20px 24px;
-  }
-  .exp-entry::before {
-    content: '▶';
-    position: absolute; left: -40px; top: 20px;
-    color: var(--grass);
-    font-size: 20px;
-    text-shadow: 1px 1px 0 #000;
-  }
-  .exp-role {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    color: var(--grass);
-    margin-bottom: 6px;
-  }
-  .exp-company {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 7px;
-    color: #555;
-    margin-bottom: 10px;
-  }
-  .exp-period {
-    display: inline-block;
-    background: var(--dirt);
-    color: #fff;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 6px;
-    padding: 4px 10px;
-    border: 2px solid #000;
-    margin-bottom: 12px;
-  }
-  .exp-desc { font-size: 18px; line-height: 1.5; color: #444; }
-  .exp-achievements { margin-top: 12px; }
-  .achievement {
-    display: flex; align-items: flex-start; gap: 8px;
-    margin-bottom: 6px;
-    font-size: 17px;
-  }
-  .ach-icon { flex-shrink: 0; }
-
-  /* ===== CONTACT ===== */
-  #contact {
-    background: var(--dirt);
-    border-top: 4px solid #000;
-  }
-  #contact .section-title { color: var(--sun); }
-  .contact-portal {
-    background: rgba(0,0,0,0.3);
-    border: 4px solid var(--sun);
-    box-shadow: 0 0 30px rgba(255,215,0,0.3), 6px 6px 0 #000;
-    padding: 40px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .contact-portal::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: repeating-linear-gradient(
-      90deg,
-      rgba(255,215,0,0.03) 0px, rgba(255,215,0,0.03) 16px,
-      transparent 16px, transparent 32px
-    );
-    animation: portal-shimmer 4s linear infinite;
-  }
-  @keyframes portal-shimmer { from { background-position-x: 0; } to { background-position-x: 64px; } }
-  .contact-msg {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(9px, 2vw, 14px);
-    color: var(--sun);
-    text-shadow: 2px 2px 0 #000;
-    margin-bottom: 8px;
-    line-height: 1.8;
-  }
-  .contact-sub { font-size: 22px; color: #ccc; margin-bottom: 32px; }
-  .contact-links {
-    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px;
-  }
-  .contact-link {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.1);
-    border: 2px solid rgba(255,255,255,0.3);
-    padding: 12px 20px;
-    color: #fff; text-decoration: none;
-    font-size: 20px;
-    transition: all 0.15s;
-  }
-  .contact-link:hover {
-    background: var(--grass);
-    border-color: var(--sun);
-    transform: translateY(-4px);
-    box-shadow: 0 4px 0 #3a6b27;
-  }
-  .contact-link span { font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 1px; }
-  .contact-form {
-    display: grid; gap: 12px; max-width: 480px; margin: 0 auto;
-  }
-  .pixel-input {
-    width: 100%;
-    background: rgba(0,0,0,0.4);
-    border: 3px solid #555;
-    color: #fff;
-    padding: 12px;
-    font-family: 'VT323', monospace;
-    font-size: 20px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .pixel-input:focus { border-color: var(--sun); box-shadow: 0 0 10px rgba(255,215,0,0.3); }
-  .pixel-input::placeholder { color: #888; }
-  textarea.pixel-input { height: 100px; resize: none; }
-
-  /* ===== FOOTER ===== */
-  footer {
-    background: #000;
-    border-top: 4px solid var(--grass);
-    padding: 20px;
-    text-align: center;
-    color: #555;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 7px;
-    letter-spacing: 1px;
-  }
-  footer span { color: var(--grass); }
-
-  /* ===== WALKING ANIMATION ===== */
-  @keyframes walk-cycle {
-    0%   { transform: translateX(-80px); }
-    100% { transform: translateX(80px); }
-  }
-  @keyframes leg-left {
-    0%,100% { transform: rotate(20deg); transform-origin: top center; }
-    50%      { transform: rotate(-20deg); transform-origin: top center; }
-  }
-  @keyframes leg-right {
-    0%,100% { transform: rotate(-20deg); transform-origin: top center; }
-    50%      { transform: rotate(20deg); transform-origin: top center; }
-  }
-  @keyframes arm-swing {
-    0%,100% { transform: rotate(15deg); transform-origin: top center; }
-    50%      { transform: rotate(-15deg); transform-origin: top center; }
-  }
-  @keyframes body-bob {
-    0%,100% { transform: translateY(0px); }
-    50%      { transform: translateY(-3px); }
-  }
-  .pixel-avatar {
-    animation: body-bob 0.5s ease-in-out infinite !important;
-  }
-  .walking-scene {
-    width: 260px; height: 140px;
-    position: relative; overflow: hidden;
-    margin: 0 auto 24px;
-  }
-  .walker {
-    position: absolute;
-    bottom: 0;
-    animation: walk-cycle 2s ease-in-out infinite alternate;
-  }
-  .leg-l { animation: leg-left 0.5s ease-in-out infinite; }
-  .leg-r { animation: leg-right 0.5s ease-in-out infinite; }
-  .arm-l { animation: arm-swing 0.5s ease-in-out infinite; }
-  .arm-r { animation: arm-swing 0.5s ease-in-out infinite reverse; }
-
-  /* ===== CERT BADGES ===== */
-  #certs { background: rgba(255,215,0,0.06); }
-  .certs-shelf {
-    display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
-  }
-  .cert-badge {
-    background: var(--cream);
-    border: 4px solid #000;
-    box-shadow: 6px 6px 0 #000;
-    padding: 20px 24px;
-    text-align: center;
-    min-width: 180px;
-    position: relative;
-    transition: transform 0.15s;
-  }
-  .cert-badge:hover { transform: translateY(-6px); }
-  .cert-badge.gold-badge { border-color: var(--sun); box-shadow: 6px 6px 0 #b8860b; }
-  .cert-badge.upcoming { opacity: 0.75; border-style: dashed; }
-  .cert-icon { font-size: 36px; display: block; margin-bottom: 8px; }
-  .cert-name {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 7px; line-height: 1.6;
-    color: var(--coal); display: block; margin-bottom: 6px;
-  }
-  .cert-org { font-size: 16px; color: #777; display: block; margin-bottom: 8px; }
-  .cert-status {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 6px; padding: 4px 10px;
-    display: inline-block; border: 2px solid #000;
-  }
-  .cert-status.done { background: var(--grass); color: #fff; }
-  .cert-status.wip  { background: var(--sun);   color: #000; }
-  .cert-ribbon {
-    position: absolute; top: -4px; right: -4px;
-    background: var(--sun); color: #000;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 5px; padding: 3px 6px;
-    border: 2px solid #000;
-  }
-
-  /* ===== CHEST EXPAND ===== */
-  .chest-body {
-    background: #c8973d;
-    padding: 0 16px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease, padding 0.3s ease;
-    background-image: repeating-linear-gradient(
-      45deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 4px,
-      transparent 4px, transparent 8px
-    );
-  }
-  .project-chest.open .chest-body {
-    max-height: 300px;
-    padding: 16px;
-  }
-  .chest-lock {
-    width: 24px; height: 24px;
-    background: var(--sun);
-    border: 3px solid #000;
-    box-shadow: inset 0 0 0 3px rgba(0,0,0,0.2);
-    position: absolute; right: 16px;
-    transition: transform 0.3s ease;
-  }
-  .project-chest.open .chest-lock { transform: rotate(45deg); }
-  .chest-lid { cursor: pointer; user-select: none; }
-  .chest-lid::after {
-    content: '▼';
-    position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
-    font-size: 10px; color: rgba(255,255,255,0.6);
-    transition: transform 0.3s ease;
-  }
-  .project-chest.open .chest-lid::after { transform: translateY(-50%) rotate(180deg); }
-
-  /* ===== DOWNLOAD BTN ===== */
-  .download-btn {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px; padding: 10px 16px;
-    background: var(--sun); color: #000;
-    border: 3px solid #000; cursor: pointer;
-    text-decoration: none; display: inline-flex;
-    align-items: center; gap: 8px;
-    box-shadow: 0 4px 0 #b8860b, inset 0 2px 0 rgba(255,255,255,0.4);
-    transition: transform 0.08s, box-shadow 0.08s;
-    letter-spacing: 1px;
-  }
-  .download-btn:hover {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 #b8860b, inset 0 2px 0 rgba(255,255,255,0.4);
-  }
-  .download-btn:active { transform: translateY(4px); box-shadow: none; }
-
-  /* ===== SCROLL ANIMATIONS ===== */
-  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 640px) {
-    .about-grid { grid-template-columns: 1fr; }
-    nav { padding: 0 12px; }
-    .nav-links a { font-size: 6px; padding: 6px 7px; }
-    .nav-hotbar { display: none; }
-    .contact-portal { padding: 20px; }
-  }
+    --grass:#5D9E3F;--dirt:#8B5E3C;--stone:#888888;--wood:#A0522D;
+    --leaf:#3A7D44;--sky:#87CEEB;--sun:#FFD700;--water:#2E86AB;
+    --coal:#222222;--cream:#FFF8E7;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--sky);font-family:'VT323',monospace;font-size:20px;color:var(--coal);image-rendering:pixelated;cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' fill='%235D9E3F'/%3E%3Crect x='4' y='4' width='8' height='8' fill='%238B5E3C'/%3E%3C/svg%3E") 8 8,crosshair;}
+  .pixel-btn{font-family:'Press Start 2P',monospace;font-size:9px;padding:12px 20px;background:var(--grass);color:#fff;border:none;cursor:pointer;display:inline-block;text-decoration:none;box-shadow:0 6px 0 #3a6b27,inset 0 2px 0 rgba(255,255,255,0.3);transition:transform 0.08s,box-shadow 0.08s;letter-spacing:1px;text-transform:uppercase;}
+  .pixel-btn:hover{transform:translateY(3px);box-shadow:0 3px 0 #3a6b27,inset 0 2px 0 rgba(255,255,255,0.3);}
+  .pixel-btn.stone{background:var(--stone);box-shadow:0 6px 0 #555,inset 0 2px 0 rgba(255,255,255,0.2);}
+  .pixel-btn.stone:hover{box-shadow:0 3px 0 #555,inset 0 2px 0 rgba(255,255,255,0.2);}
+  .download-btn{font-family:'Press Start 2P',monospace;font-size:8px;padding:10px 16px;background:var(--sun);color:#000;border:3px solid #000;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 0 #b8860b,inset 0 2px 0 rgba(255,255,255,0.4);transition:transform 0.08s,box-shadow 0.08s;letter-spacing:1px;}
+  .download-btn:hover{transform:translateY(2px);box-shadow:0 2px 0 #b8860b;}
+  /* SKY */
+  .sky-bg{position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,#87CEEB 0%,#b8e4f9 60%,#d4f0c0 100%);}
+  .clouds{position:fixed;top:0;left:0;width:200%;height:200px;z-index:-1;animation:clouds-move 60s linear infinite;}
+  @keyframes clouds-move{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .sun-el{position:fixed;top:30px;right:80px;z-index:-1;width:64px;height:64px;background:var(--sun);box-shadow:0 0 0 4px #fff,0 0 0 8px var(--sun),0 0 40px 10px rgba(255,215,0,0.4);animation:sun-pulse 4s ease-in-out infinite;}
+  @keyframes sun-pulse{0%,100%{box-shadow:0 0 0 4px #fff,0 0 0 8px var(--sun),0 0 40px 10px rgba(255,215,0,0.4)}50%{box-shadow:0 0 0 4px #fff,0 0 0 8px var(--sun),0 0 60px 20px rgba(255,215,0,0.6)}}
+  /* NAV */
+  nav{position:fixed;top:0;width:100%;z-index:100;background:var(--dirt);border-bottom:4px solid #000;box-shadow:0 4px 0 #5a3820;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;}
+  .nav-logo{font-family:'Press Start 2P',monospace;font-size:11px;color:var(--sun);text-shadow:2px 2px 0 #000;letter-spacing:2px;}
+  .nav-links{display:flex;gap:4px;}
+  .nav-links a{font-family:'Press Start 2P',monospace;font-size:7px;color:#fff;text-decoration:none;padding:8px 10px;background:rgba(0,0,0,0.2);border:2px solid transparent;transition:all 0.15s;letter-spacing:1px;}
+  .nav-links a:hover{background:var(--grass);border-color:var(--sun);color:var(--sun);}
+  .nav-hotbar{display:flex;gap:2px;}
+  .hotbar-slot{width:36px;height:36px;background:rgba(0,0,0,0.3);border:3px solid #555;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .hotbar-slot.active{border-color:var(--sun);}
+  /* HERO */
+  #hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:56px;position:relative;overflow:hidden;}
+  .hero-content{text-align:center;z-index:2;animation:hero-drop 0.6s cubic-bezier(0.22,0.61,0.36,1) both;}
+  @keyframes hero-drop{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:translateY(0)}}
+  /* WALK */
+  @keyframes walk-cycle{0%{transform:translateX(-80px)}100%{transform:translateX(80px)}}
+  @keyframes leg-left{0%,100%{transform:rotate(20deg);transform-origin:top center}50%{transform:rotate(-20deg);transform-origin:top center}}
+  @keyframes leg-right{0%,100%{transform:rotate(-20deg);transform-origin:top center}50%{transform:rotate(20deg);transform-origin:top center}}
+  @keyframes arm-swing{0%,100%{transform:rotate(15deg);transform-origin:top center}50%{transform:rotate(-15deg);transform-origin:top center}}
+  @keyframes body-bob{0%,100%{transform:translateY(0px)}50%{transform:translateY(-3px)}}
+  .walking-scene{width:260px;height:140px;position:relative;overflow:hidden;margin:0 auto 24px;animation:body-bob 0.5s ease-in-out infinite;}
+  .walker{position:absolute;bottom:0;animation:walk-cycle 2s ease-in-out infinite alternate;}
+  .leg-l{animation:leg-left 0.5s ease-in-out infinite;}
+  .leg-r{animation:leg-right 0.5s ease-in-out infinite;}
+  .arm-l{animation:arm-swing 0.5s ease-in-out infinite;}
+  .arm-r{animation:arm-swing 0.5s ease-in-out infinite reverse;}
+  .hero-name{font-family:'Press Start 2P',monospace;font-size:clamp(18px,4vw,32px);color:#fff;text-shadow:4px 4px 0 #000,-1px -1px 0 #000;margin-bottom:16px;letter-spacing:2px;}
+  .hero-title{font-family:'VT323',monospace;font-size:28px;color:var(--sun);text-shadow:2px 2px 0 #000;margin-bottom:32px;letter-spacing:3px;}
+  .hero-xp{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:32px;}
+  .xp-bar{width:220px;height:16px;background:#222;border:2px solid #000;overflow:hidden;}
+  .xp-fill{height:100%;background:linear-gradient(90deg,#7FE620,#A8F040);width:0%;transition:width 1.5s ease 0.8s;box-shadow:0 0 8px #7FE620;}
+  .xp-label{font-family:'Press Start 2P',monospace;font-size:7px;color:#7FE620;}
+  .hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+  .ground{width:100%;position:absolute;bottom:0;left:0;}
+  .ground-grass{height:24px;background:var(--grass);border-top:4px solid #000;}
+  .ground-dirt{height:48px;background:var(--dirt);}
+  .ground-stone{height:16px;background:var(--stone);}
+  .tree{position:absolute;bottom:88px;display:flex;flex-direction:column;align-items:center;}
+  .tree-leaves{width:64px;height:64px;background:var(--leaf);box-shadow:4px 4px 0 #2d6135,-4px 4px 0 #2d6135;position:relative;}
+  .tree-leaves::before{content:'';position:absolute;top:-24px;left:8px;width:48px;height:32px;background:#4a9855;}
+  .tree-trunk{width:16px;height:40px;background:var(--wood);}
+  .birds{position:absolute;top:80px;left:0;width:100%;z-index:1;}
+  .bird{position:absolute;font-size:16px;animation:bird-fly linear infinite;}
+  @keyframes bird-fly{from{transform:translateX(-60px)}to{transform:translateX(110vw)}}
+  /* SECTIONS */
+  section{padding:80px 0 60px;position:relative;}
+  .section-block{max-width:960px;margin:0 auto;padding:0 24px;}
+  .section-title{font-family:'Press Start 2P',monospace;font-size:clamp(12px,2vw,18px);margin-bottom:40px;display:flex;align-items:center;gap:16px;text-shadow:2px 2px 0 rgba(0,0,0,0.3);}
+  .section-title::after{content:'';flex:1;height:4px;background:currentColor;opacity:0.3;}
+  .title-icon{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;}
+  /* ABOUT */
+  #about{background:rgba(255,255,255,0.15);}
+  .about-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:40px;align-items:start;}
+  .about-card{background:var(--cream);padding:24px;border:4px solid #000;box-shadow:6px 6px 0 #000;position:relative;}
+  .about-card::before{content:'';position:absolute;top:-4px;left:-4px;right:-4px;bottom:-4px;border:4px solid var(--grass);pointer-events:none;z-index:-1;}
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:2px dotted #ccc;font-size:17px;}
+  .stat-row:last-child{border-bottom:none;}
+  .stat-label{color:#555;font-family:'Press Start 2P',monospace;font-size:7px;}
+  .stat-val{color:var(--grass);font-weight:bold;}
+  .about-text{font-size:21px;line-height:1.6;color:#333;}
+  .about-text p{margin-bottom:16px;}
+  .health-bar{display:flex;gap:4px;flex-wrap:wrap;margin-top:16px;}
+  .heart{font-size:18px;}
+  /* SKILLS */
+  #skills{background:rgba(139,94,60,0.08);}
+  .skills-inventory{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+  .inventory-slot{background:#c8b89a;border:4px solid #000;box-shadow:inset 2px 2px 0 rgba(255,255,255,0.4),inset -2px -2px 0 rgba(0,0,0,0.3),4px 4px 0 #000;padding:16px;position:relative;cursor:default;transition:transform 0.1s;}
+  .inventory-slot:hover{transform:scale(1.04);z-index:2;}
+  .slot-icon{font-size:32px;display:block;margin-bottom:8px;}
+  .slot-name{font-family:'Press Start 2P',monospace;font-size:7px;display:block;margin-bottom:10px;}
+  .slot-bar{height:8px;background:#555;border:2px solid #000;}
+  .slot-fill{height:100%;background:linear-gradient(90deg,#7FE620,#A8F040);width:0;transition:width 1.2s ease;box-shadow:0 0 6px #7FE620;}
+  .slot-fill.blue{background:linear-gradient(90deg,#2E86AB,#54c6f0);box-shadow:0 0 6px #2E86AB;}
+  .slot-fill.gold{background:linear-gradient(90deg,#FFD700,#FFEE77);box-shadow:0 0 6px #FFD700;}
+  .slot-fill.red{background:linear-gradient(90deg,#e74c3c,#ff7675);box-shadow:0 0 6px #e74c3c;}
+  .slot-level{position:absolute;top:6px;right:8px;font-family:'Press Start 2P',monospace;font-size:7px;color:#FFD700;text-shadow:1px 1px 0 #000;}
+  .slot-durability{font-size:13px;color:#555;margin-top:6px;display:block;}
+  /* PROJECTS */
+  #projects{background:rgba(46,134,171,0.07);}
+  .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
+  .project-chest{background:var(--wood);border:4px solid #000;box-shadow:6px 6px 0 #000;overflow:hidden;transition:transform 0.15s;cursor:pointer;}
+  .project-chest:hover{transform:translateY(-6px);}
+  .chest-lid{background:#8B4513;padding:16px;border-bottom:4px solid #000;display:flex;align-items:center;gap:12px;position:relative;cursor:pointer;user-select:none;}
+  .chest-lid::after{content:'▼';position:absolute;right:48px;top:50%;transform:translateY(-50%);font-size:10px;color:rgba(255,255,255,0.6);transition:transform 0.3s ease;}
+  .project-chest.open .chest-lid::after{transform:translateY(-50%) rotate(180deg);}
+  .chest-lock{width:24px;height:24px;background:var(--sun);border:3px solid #000;position:absolute;right:16px;transition:transform 0.3s ease;}
+  .project-chest.open .chest-lock{transform:rotate(45deg);}
+  .chest-icon{font-size:24px;}
+  .chest-title{font-family:'Press Start 2P',monospace;font-size:9px;color:#fff;text-shadow:1px 1px 0 #000;}
+  .chest-body{background:#c8973d;padding:0 16px;max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s ease;}
+  .project-chest.open .chest-body{max-height:300px;padding:16px;}
+  .chest-desc{font-size:18px;line-height:1.5;color:#3a1f00;margin-bottom:12px;}
+  .chest-tags{display:flex;gap:6px;flex-wrap:wrap;}
+  .tag{font-family:'Press Start 2P',monospace;font-size:6px;padding:4px 8px;background:var(--grass);color:#fff;border:2px solid #000;box-shadow:2px 2px 0 #000;}
+  .tag.blue{background:var(--water);}
+  .tag.gold{background:#b8860b;}
+  /* EXPERIENCE */
+  #experience{background:rgba(93,158,63,0.06);}
+  .timeline{position:relative;padding-left:32px;}
+  .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:8px;background:repeating-linear-gradient(180deg,var(--grass) 0px,var(--grass) 16px,var(--dirt) 16px,var(--dirt) 32px);border-left:2px solid #000;border-right:2px solid #000;}
+  .exp-entry{position:relative;margin-bottom:32px;background:var(--cream);border:4px solid #000;box-shadow:6px 6px 0 #000;padding:20px 24px;}
+  .exp-entry::before{content:'▶';position:absolute;left:-40px;top:20px;color:var(--grass);font-size:20px;}
+  .exp-role{font-family:'Press Start 2P',monospace;font-size:9px;color:var(--grass);margin-bottom:6px;}
+  .exp-company{font-family:'Press Start 2P',monospace;font-size:7px;color:#555;margin-bottom:10px;}
+  .exp-period{display:inline-block;background:var(--dirt);color:#fff;font-family:'Press Start 2P',monospace;font-size:6px;padding:4px 10px;border:2px solid #000;margin-bottom:12px;}
+  .exp-desc{font-size:18px;line-height:1.5;color:#444;}
+  .exp-achievements{margin-top:12px;}
+  .achievement{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:17px;}
+  .ach-icon{flex-shrink:0;}
+  /* CERTS */
+  #certs{background:rgba(255,215,0,0.06);}
+  .certs-shelf{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;}
+  .cert-badge{background:var(--cream);border:4px solid #000;box-shadow:6px 6px 0 #000;padding:20px 24px;text-align:center;min-width:180px;position:relative;transition:transform 0.15s;}
+  .cert-badge:hover{transform:translateY(-6px);}
+  .cert-badge.gold-badge{border-color:var(--sun);box-shadow:6px 6px 0 #b8860b;}
+  .cert-badge.upcoming{opacity:0.75;border-style:dashed;}
+  .cert-icon{font-size:36px;display:block;margin-bottom:8px;}
+  .cert-name{font-family:'Press Start 2P',monospace;font-size:7px;line-height:1.6;color:var(--coal);display:block;margin-bottom:6px;}
+  .cert-org{font-size:16px;color:#777;display:block;margin-bottom:8px;}
+  .cert-status{font-family:'Press Start 2P',monospace;font-size:6px;padding:4px 10px;display:inline-block;border:2px solid #000;}
+  .cert-status.done{background:var(--grass);color:#fff;}
+  .cert-status.wip{background:var(--sun);color:#000;}
+  .cert-ribbon{position:absolute;top:-4px;right:-4px;background:var(--sun);color:#000;font-family:'Press Start 2P',monospace;font-size:5px;padding:3px 6px;border:2px solid #000;}
+  /* CONTACT */
+  #contact{background:var(--dirt);border-top:4px solid #000;}
+  #contact .section-title{color:var(--sun);}
+  .contact-portal{background:rgba(0,0,0,0.3);border:4px solid var(--sun);box-shadow:0 0 30px rgba(255,215,0,0.3),6px 6px 0 #000;padding:40px;text-align:center;position:relative;overflow:hidden;}
+  .contact-portal::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,215,0,0.03) 0px,rgba(255,215,0,0.03) 16px,transparent 16px,transparent 32px);animation:portal-shimmer 4s linear infinite;}
+  @keyframes portal-shimmer{from{background-position-x:0}to{background-position-x:64px}}
+  .contact-msg{font-family:'Press Start 2P',monospace;font-size:clamp(9px,2vw,14px);color:var(--sun);text-shadow:2px 2px 0 #000;margin-bottom:8px;line-height:1.8;}
+  .contact-sub{font-size:22px;color:#ccc;margin-bottom:32px;}
+  .contact-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;}
+  .contact-link{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.3);padding:12px 20px;color:#fff;text-decoration:none;font-size:20px;transition:all 0.15s;}
+  .contact-link:hover{background:var(--grass);border-color:var(--sun);transform:translateY(-4px);box-shadow:0 4px 0 #3a6b27;}
+  .contact-link span{font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:1px;}
+  .contact-form{display:grid;gap:12px;max-width:480px;margin:0 auto;}
+  .pixel-input{width:100%;background:rgba(0,0,0,0.4);border:3px solid #555;color:#fff;padding:12px;font-family:'VT323',monospace;font-size:20px;outline:none;transition:border-color 0.15s;}
+  .pixel-input:focus{border-color:var(--sun);box-shadow:0 0 10px rgba(255,215,0,0.3);}
+  .pixel-input::placeholder{color:#888;}
+  textarea.pixel-input{height:100px;resize:none;}
+  /* FOOTER */
+  footer{background:#000;border-top:4px solid var(--grass);padding:20px;text-align:center;color:#555;font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:1px;}
+  footer span{color:var(--grass);}
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.5s ease,transform 0.5s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  @media(max-width:640px){.about-grid{grid-template-columns:1fr;}nav{padding:0 12px;}.nav-links a{font-size:6px;padding:6px 7px;}.nav-hotbar{display:none;}.contact-portal{padding:20px;}}
 </style>
 </head>
 <body>
-
-<!-- Sky -->
 <div class="sky-bg"></div>
-
-<!-- Sun -->
-<div class="sun"></div>
-
-<!-- Clouds -->
+<div class="sun-el"></div>
 <div class="clouds" id="clouds"></div>
-
-<!-- Birds -->
 <div class="birds" id="birds"></div>
 
-<!-- ===== NAV ===== -->
 <nav>
   <div class="nav-logo">⛏ NAT PIANTHUM</div>
   <div class="nav-links">
-    <a href="#about">ABOUT</a>
-    <a href="#skills">SKILLS</a>
-    <a href="#projects">PROJECTS</a>
-    <a href="#experience">XP</a>
-    <a href="#certs">CERTS</a>
-    <a href="#contact">CONTACT</a>
+    <a href="#about">ABOUT</a><a href="#skills">SKILLS</a><a href="#projects">PROJECTS</a>
+    <a href="#experience">XP</a><a href="#certs">CERTS</a><a href="#contact">CONTACT</a>
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <a href="Nat_resume.pdf" download class="download-btn">⬇ RESUME</a>
+    <div class="nav-hotbar">
+      <div class="hotbar-slot active">🗡️</div><div class="hotbar-slot">🪓</div>
+      <div class="hotbar-slot">⛏</div><div class="hotbar-slot">🪣</div><div class="hotbar-slot">🍎</div>
+    </div>
   </div>
 </nav>
 
-<!-- ===== HERO ===== -->
 <section id="hero">
-  <!-- Trees -->
   <div class="tree" style="left:5%;"><div class="tree-leaves"></div><div class="tree-trunk"></div></div>
-  <div class="tree" style="left:11%; transform:scale(0.8);"><div class="tree-leaves"></div><div class="tree-trunk"></div></div>
+  <div class="tree" style="left:11%;transform:scale(0.8);"><div class="tree-leaves"></div><div class="tree-trunk"></div></div>
   <div class="tree" style="right:6%;"><div class="tree-leaves"></div><div class="tree-trunk"></div></div>
-  <div class="tree" style="right:14%; transform:scale(1.1);"><div class="tree-leaves"></div><div class="tree-trunk"></div></div>
-
+  <div class="tree" style="right:14%;transform:scale(1.1);"><div class="tree-leaves"></div><div class="tree-trunk"></div></div>
   <div class="hero-content">
     <div class="walking-scene">
       <div class="walker">
         <svg width="260" height="140" viewBox="0 0 65 35" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-        <!-- ══════════ YOU (center) ══════════ -->
-        <rect x="27" y="1" width="11" height="18" fill="#1a0a00"/>
-        <rect x="28" y="1" width="9" height="8" fill="#C07A45"/>
-        <rect x="27" y="1" width="11" height="3" fill="#1a0a00"/>
-        <rect x="27" y="1" width="2" height="16" fill="#1a0a00"/>
-        <rect x="36" y="1" width="2" height="16" fill="#1a0a00"/>
-        <rect x="29" y="4" width="2" height="2" fill="#2C1810"/>
-        <rect x="34" y="4" width="2" height="2" fill="#2C1810"/>
-        <rect x="30" y="4" width="1" height="1" fill="#fff"/>
-        <rect x="35" y="4" width="1" height="1" fill="#fff"/>
-        <rect x="30" y="7" width="1" height="1" fill="#a0522d"/>
-        <rect x="34" y="7" width="1" height="1" fill="#a0522d"/>
-        <rect x="31" y="8" width="3" height="1" fill="#a0522d"/>
-        <rect x="28" y="6" width="2" height="1" fill="#e8967a" opacity="0.6"/>
-        <rect x="35" y="6" width="2" height="1" fill="#e8967a" opacity="0.6"/>
-        <rect x="30" y="9" width="5" height="2" fill="#C07A45"/>
-        <rect x="27" y="11" width="11" height="9" fill="#9B59B6"/>
-        <rect x="30" y="11" width="5" height="2" fill="#7D3C98"/>
-        <rect x="29" y="13" width="7" height="1" fill="#7D3C98"/>
-        <!-- Arms with swing animation via animateTransform -->
-        <g class="arm-l"><rect x="24" y="11" width="3" height="7" fill="#C07A45"/><rect x="24" y="11" width="3" height="2" fill="#9B59B6"/><rect x="24" y="18" width="3" height="2" fill="#C07A45"/></g>
-        <g class="arm-r"><rect x="38" y="11" width="3" height="7" fill="#C07A45"/><rect x="38" y="11" width="3" height="2" fill="#9B59B6"/><rect x="38" y="18" width="3" height="2" fill="#C07A45"/></g>
-        <rect x="26" y="20" width="13" height="7" fill="#6C3483"/>
-        <rect x="25" y="23" width="15" height="4" fill="#7D3C98"/>
-        <!-- Legs with walk animation -->
-        <g class="leg-l"><rect x="28" y="27" width="3" height="5" fill="#C07A45"/><rect x="27" y="31" width="4" height="2" fill="#1a0a00"/></g>
-        <g class="leg-r"><rect x="34" y="27" width="3" height="5" fill="#C07A45"/><rect x="33" y="31" width="4" height="2" fill="#1a0a00"/></g>
-        <rect x="28" y="8" width="2" height="4" fill="#1a0a00"/>
-
-        <!-- ══════════ DARK DOG (left) ══════════ -->
-        <rect x="5" y="20" width="14" height="8" fill="#3D2B1F"/>
-        <rect x="3" y="14" width="10" height="8" fill="#3D2B1F"/>
-        <rect x="2" y="17" width="4" height="4" fill="#5a3d2b"/>
-        <rect x="2" y="17" width="3" height="2" fill="#1a0a00"/>
-        <rect x="5" y="15" width="2" height="2" fill="#1a0a00"/>
-        <rect x="9" y="15" width="2" height="2" fill="#1a0a00"/>
-        <rect x="6" y="15" width="1" height="1" fill="#fff"/>
-        <rect x="10" y="15" width="1" height="1" fill="#fff"/>
-        <rect x="3" y="12" width="3" height="4" fill="#2a1a10"/>
-        <rect x="9" y="12" width="3" height="4" fill="#2a1a10"/>
-        <g class="leg-l"><rect x="6" y="28" width="3" height="5" fill="#3D2B1F"/><rect x="5" y="32" width="4" height="2" fill="#2a1a10"/></g>
-        <g class="leg-r"><rect x="10" y="28" width="3" height="5" fill="#3D2B1F"/><rect x="9" y="32" width="4" height="2" fill="#2a1a10"/></g>
-        <rect x="14" y="28" width="3" height="4" fill="#3D2B1F"/>
-        <rect x="13" y="31" width="4" height="2" fill="#2a1a10"/>
-        <rect x="18" y="17" width="3" height="3" fill="#3D2B1F"/>
-        <rect x="20" y="15" width="3" height="3" fill="#3D2B1F"/>
-        <rect x="3" y="21" width="10" height="2" fill="#e74c3c"/>
-        <rect x="7" y="22" width="2" height="2" fill="#FFD700"/>
-        <rect x="3" y="20" width="3" height="2" fill="#e91e63"/>
-
-        <!-- ══════════ LIGHT CAT (right) ══════════ -->
-        <rect x="47" y="21" width="12" height="8" fill="#F5DEB3"/>
-        <rect x="48" y="13" width="10" height="9" fill="#F5DEB3"/>
-        <rect x="48" y="10" width="3" height="4" fill="#F5DEB3"/>
-        <rect x="55" y="10" width="3" height="4" fill="#F5DEB3"/>
-        <rect x="49" y="11" width="1" height="2" fill="#e8a0a0"/>
-        <rect x="56" y="11" width="1" height="2" fill="#e8a0a0"/>
-        <rect x="50" y="15" width="2" height="3" fill="#27AE60"/>
-        <rect x="54" y="15" width="2" height="3" fill="#27AE60"/>
-        <rect x="51" y="15" width="1" height="3" fill="#1a0a00"/>
-        <rect x="55" y="15" width="1" height="3" fill="#1a0a00"/>
-        <rect x="50" y="15" width="1" height="1" fill="#fff"/>
-        <rect x="54" y="15" width="1" height="1" fill="#fff"/>
-        <rect x="52" y="19" width="2" height="1" fill="#e8967a"/>
-        <rect x="45" y="19" width="5" height="1" fill="#888" opacity="0.7"/>
-        <rect x="56" y="19" width="5" height="1" fill="#888" opacity="0.7"/>
-        <rect x="49" y="22" width="8" height="1" fill="#d4c09a"/>
-        <rect x="49" y="24" width="8" height="1" fill="#d4c09a"/>
-        <g class="leg-l"><rect x="48" y="29" width="3" height="4" fill="#F5DEB3"/><rect x="47" y="32" width="4" height="2" fill="#e8c99a"/></g>
-        <g class="leg-r"><rect x="52" y="29" width="3" height="4" fill="#F5DEB3"/><rect x="51" y="32" width="4" height="2" fill="#e8c99a"/></g>
-        <rect x="59" y="22" width="3" height="8" fill="#F5DEB3"/>
-        <rect x="57" y="20" width="4" height="3" fill="#F5DEB3"/>
-        <rect x="60" y="18" width="3" height="3" fill="#F5DEB3"/>
-        <rect x="48" y="21" width="10" height="2" fill="#3498DB"/>
-        <rect x="52" y="22" width="2" height="2" fill="#FFD700"/>
-        <rect x="3"  y="33" width="16" height="1" fill="#000" opacity="0.15"/>
-        <rect x="24" y="33" width="17" height="1" fill="#000" opacity="0.15"/>
-        <rect x="46" y="33" width="16" height="1" fill="#000" opacity="0.15"/>
+          <rect x="27" y="1" width="11" height="18" fill="#1a0a00"/>
+          <rect x="28" y="1" width="9" height="8" fill="#C07A45"/>
+          <rect x="27" y="1" width="11" height="3" fill="#1a0a00"/>
+          <rect x="27" y="1" width="2" height="16" fill="#1a0a00"/>
+          <rect x="36" y="1" width="2" height="16" fill="#1a0a00"/>
+          <rect x="29" y="4" width="2" height="2" fill="#2C1810"/>
+          <rect x="34" y="4" width="2" height="2" fill="#2C1810"/>
+          <rect x="30" y="4" width="1" height="1" fill="#fff"/>
+          <rect x="35" y="4" width="1" height="1" fill="#fff"/>
+          <rect x="30" y="7" width="1" height="1" fill="#a0522d"/>
+          <rect x="34" y="7" width="1" height="1" fill="#a0522d"/>
+          <rect x="31" y="8" width="3" height="1" fill="#a0522d"/>
+          <rect x="28" y="6" width="2" height="1" fill="#e8967a" opacity="0.6"/>
+          <rect x="35" y="6" width="2" height="1" fill="#e8967a" opacity="0.6"/>
+          <rect x="30" y="9" width="5" height="2" fill="#C07A45"/>
+          <rect x="27" y="11" width="11" height="9" fill="#9B59B6"/>
+          <rect x="30" y="11" width="5" height="2" fill="#7D3C98"/>
+          <rect x="29" y="13" width="7" height="1" fill="#7D3C98"/>
+          <g class="arm-l"><rect x="24" y="11" width="3" height="7" fill="#C07A45"/><rect x="24" y="11" width="3" height="2" fill="#9B59B6"/><rect x="24" y="18" width="3" height="2" fill="#C07A45"/></g>
+          <g class="arm-r"><rect x="38" y="11" width="3" height="7" fill="#C07A45"/><rect x="38" y="11" width="3" height="2" fill="#9B59B6"/><rect x="38" y="18" width="3" height="2" fill="#C07A45"/></g>
+          <rect x="26" y="20" width="13" height="7" fill="#6C3483"/>
+          <rect x="25" y="23" width="15" height="4" fill="#7D3C98"/>
+          <g class="leg-l"><rect x="28" y="27" width="3" height="5" fill="#C07A45"/><rect x="27" y="31" width="4" height="2" fill="#1a0a00"/></g>
+          <g class="leg-r"><rect x="34" y="27" width="3" height="5" fill="#C07A45"/><rect x="33" y="31" width="4" height="2" fill="#1a0a00"/></g>
+          <rect x="28" y="8" width="2" height="4" fill="#1a0a00"/>
+          <rect x="5" y="20" width="14" height="8" fill="#3D2B1F"/>
+          <rect x="3" y="14" width="10" height="8" fill="#3D2B1F"/>
+          <rect x="2" y="17" width="4" height="4" fill="#5a3d2b"/>
+          <rect x="2" y="17" width="3" height="2" fill="#1a0a00"/>
+          <rect x="5" y="15" width="2" height="2" fill="#1a0a00"/>
+          <rect x="9" y="15" width="2" height="2" fill="#1a0a00"/>
+          <rect x="6" y="15" width="1" height="1" fill="#fff"/>
+          <rect x="10" y="15" width="1" height="1" fill="#fff"/>
+          <rect x="3" y="12" width="3" height="4" fill="#2a1a10"/>
+          <rect x="9" y="12" width="3" height="4" fill="#2a1a10"/>
+          <g class="leg-l"><rect x="6" y="28" width="3" height="5" fill="#3D2B1F"/><rect x="5" y="32" width="4" height="2" fill="#2a1a10"/></g>
+          <g class="leg-r"><rect x="10" y="28" width="3" height="5" fill="#3D2B1F"/><rect x="9" y="32" width="4" height="2" fill="#2a1a10"/></g>
+          <rect x="14" y="28" width="3" height="4" fill="#3D2B1F"/>
+          <rect x="13" y="31" width="4" height="2" fill="#2a1a10"/>
+          <rect x="18" y="17" width="3" height="3" fill="#3D2B1F"/>
+          <rect x="20" y="15" width="3" height="3" fill="#3D2B1F"/>
+          <rect x="3" y="21" width="10" height="2" fill="#e74c3c"/>
+          <rect x="7" y="22" width="2" height="2" fill="#FFD700"/>
+          <rect x="3" y="20" width="3" height="2" fill="#e91e63"/>
+          <rect x="47" y="21" width="12" height="8" fill="#F5DEB3"/>
+          <rect x="48" y="13" width="10" height="9" fill="#F5DEB3"/>
+          <rect x="48" y="10" width="3" height="4" fill="#F5DEB3"/>
+          <rect x="55" y="10" width="3" height="4" fill="#F5DEB3"/>
+          <rect x="49" y="11" width="1" height="2" fill="#e8a0a0"/>
+          <rect x="56" y="11" width="1" height="2" fill="#e8a0a0"/>
+          <rect x="50" y="15" width="2" height="3" fill="#27AE60"/>
+          <rect x="54" y="15" width="2" height="3" fill="#27AE60"/>
+          <rect x="51" y="15" width="1" height="3" fill="#1a0a00"/>
+          <rect x="55" y="15" width="1" height="3" fill="#1a0a00"/>
+          <rect x="50" y="15" width="1" height="1" fill="#fff"/>
+          <rect x="54" y="15" width="1" height="1" fill="#fff"/>
+          <rect x="52" y="19" width="2" height="1" fill="#e8967a"/>
+          <rect x="45" y="19" width="5" height="1" fill="#888" opacity="0.7"/>
+          <rect x="56" y="19" width="5" height="1" fill="#888" opacity="0.7"/>
+          <rect x="49" y="22" width="8" height="1" fill="#d4c09a"/>
+          <rect x="49" y="24" width="8" height="1" fill="#d4c09a"/>
+          <g class="leg-l"><rect x="48" y="29" width="3" height="4" fill="#F5DEB3"/><rect x="47" y="32" width="4" height="2" fill="#e8c99a"/></g>
+          <g class="leg-r"><rect x="52" y="29" width="3" height="4" fill="#F5DEB3"/><rect x="51" y="32" width="4" height="2" fill="#e8c99a"/></g>
+          <rect x="59" y="22" width="3" height="8" fill="#F5DEB3"/>
+          <rect x="57" y="20" width="4" height="3" fill="#F5DEB3"/>
+          <rect x="60" y="18" width="3" height="3" fill="#F5DEB3"/>
+          <rect x="48" y="21" width="10" height="2" fill="#3498DB"/>
+          <rect x="52" y="22" width="2" height="2" fill="#FFD700"/>
+          <rect x="3" y="33" width="16" height="1" fill="#000" opacity="0.15"/>
+          <rect x="24" y="33" width="17" height="1" fill="#000" opacity="0.15"/>
+          <rect x="46" y="33" width="16" height="1" fill="#000" opacity="0.15"/>
         </svg>
       </div>
     </div>
-
     <h1 class="hero-name">Nat Pianthum</h1>
-    <div class="hero-title">✦ PROBLEM SOLVER ✦ SYDNEY ✦</div>
-
+    <div class="hero-title">✦ END USER SUPPORT SPECIALIST ✦ SYDNEY ✦</div>
     <div class="hero-xp">
-      <span class="xp-label">LVL 2</span>
+      <span class="xp-label">LVL 9+</span>
       <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
-      <span class="xp-label">XP: 9+ YEARS </span>
+      <span class="xp-label">XP: 9200/10000</span>
     </div>
-
     <div class="hero-btns">
       <a href="#projects" class="pixel-btn">⚔ VIEW PROJECTS</a>
       <a href="#contact" class="pixel-btn stone">✉ CONTACT ME</a>
       <a href="Nat_resume.pdf" download class="download-btn">⬇ DOWNLOAD RESUME</a>
     </div>
   </div>
-
-  <!-- Ground -->
   <div class="ground">
-    <div class="ground-grass"></div>
-    <div class="ground-dirt"></div>
-    <div class="ground-stone"></div>
+    <div class="ground-grass"></div><div class="ground-dirt"></div><div class="ground-stone"></div>
   </div>
 </section>
 
-<!-- ===== ABOUT ===== -->
 <section id="about">
   <div class="section-block">
-    <div class="section-title" style="color: var(--grass);">
-      <span class="title-icon">👩🏽‍💻</span> ABOUT ME
-    </div>
+    <div class="section-title" style="color:var(--grass);"><span class="title-icon">👩🏽‍💻</span> ABOUT ME</div>
     <div class="about-grid reveal">
       <div class="about-card">
         <div class="stat-row"><span class="stat-label">NAME</span><span class="stat-val">Nat Pianthum</span></div>
@@ -946,20 +315,159 @@
         </div>
       </div>
       <div class="about-text">
-        <p>👋 Hi, I'm Nat — a Technical Support professional with 9+ years of experience operating in high-stakes financial services and enterprise environments. I'm the person who keeps things running quietly behind the scenes so everyone else can do their best work.</p>
+        <p>👋 Hi, I'm Nat — a Technical Support professional with 9+ years of experience in high-stakes financial services and enterprise environments. I'm the person who keeps things running quietly behind the scenes so everyone else can do their best work.</p>
         <p>I bring a rare combination of technical depth and people-first thinking. Whether it's resolving a complex L2 incident during peak trading hours, onboarding 300+ consultants onto AWS VDI, or restructuring a messy CRM — I approach every challenge methodically and deliver outcomes that actually stick.</p>
-        <p>I hold an MBA in Finance from UTS and AWS Cloud Practitioner certification, with AWS AI Practitioner in progress. I'm constantly learning, whether it's a new scripting technique, a cloud service, or a better way to document a process. 📚</p>
-        <p>Outside of work, you'll find me with my dog, exploring new restaurants around Sydney, staying active at the gym, or planning the next travel adventure. 🐾✈️🍜💪</p>
+        <p>I hold an MBA in Finance from UTS and AWS Cloud Practitioner certification, with AWS AI Practitioner in progress. I'm constantly learning — whether it's a new scripting technique, a cloud service, or a better way to document a process. 📚</p>
+        <p>Outside of work, you'll find me with my pets, exploring new restaurants around Sydney, staying active at the gym, or planning the next travel adventure. 🐾✈️🍜💪</p>
       </div>
     </div>
   </div>
 </section>
 
+<section id="skills">
+  <div class="section-block">
+    <div class="section-title" style="color:var(--dirt);"><span class="title-icon">🎒</span> SKILLS INVENTORY</div>
+    <div class="skills-inventory" id="skillsGrid"></div>
+  </div>
+</section>
 
+<section id="projects">
+  <div class="section-block">
+    <div class="section-title" style="color:var(--water);"><span class="title-icon">📦</span> PROJECT CHESTS</div>
+    <div class="projects-grid" id="projectsGrid"></div>
+  </div>
+</section>
 
+<section id="experience">
+  <div class="section-block">
+    <div class="section-title" style="color:var(--grass);"><span class="title-icon">📜</span> EXPERIENCE LOG</div>
+    <div class="timeline" id="expTimeline"></div>
+  </div>
+</section>
 
-<!-- ===== FOOTER ===== -->
+<section id="certs">
+  <div class="section-block">
+    <div class="section-title" style="color:var(--sun);"><span class="title-icon">🏅</span> CERTIFICATIONS</div>
+    <div class="certs-shelf reveal">
+      <div class="cert-badge gold-badge">
+        <div class="cert-ribbon">✓ EARNED</div>
+        <span class="cert-icon">🎓</span>
+        <span class="cert-name">MBA<br>MAJOR IN FINANCE</span>
+        <span class="cert-org">University of Technology Sydney</span>
+        <span class="cert-status done">✅ COMPLETED MAY 2020</span>
+      </div>
+      <div class="cert-badge gold-badge">
+        <div class="cert-ribbon">✓ EARNED</div>
+        <span class="cert-icon">☁️</span>
+        <span class="cert-name">AWS CLOUD<br>PRACTITIONER</span>
+        <span class="cert-org">Amazon Web Services</span>
+        <span class="cert-status done">✅ COMPLETED AUG 2025</span>
+      </div>
+      <div class="cert-badge upcoming">
+        <div class="cert-ribbon" style="background:var(--grass);color:#fff;">IN PROGRESS</div>
+        <span class="cert-icon">🤖</span>
+        <span class="cert-name">AWS AI<br>PRACTITIONER</span>
+        <span class="cert-org">Amazon Web Services</span>
+        <span class="cert-status wip">⚡ EXPECTED MAR 2026</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-block">
+    <div class="section-title"><span class="title-icon">📡</span> OPEN A PORTAL</div>
+    <div class="contact-portal reveal">
+      <div class="contact-msg">WANT TO CONNECT OR COLLABORATE?<br>DROP ME A MESSAGE!</div>
+      <div class="contact-sub">Based in Sydney — always happy to chat ⚡</div>
+      <div class="contact-links">
+        <a href="mailto:npianthum@gmail.com" class="contact-link">✉️ <span>EMAIL</span></a>
+        <a href="https://linkedin.com/in/natchap" class="contact-link" target="_blank">💼 <span>LINKEDIN</span></a>
+      </div>
+      <div class="contact-form">
+        <input class="pixel-input" type="text" placeholder="YOUR NAME..."/>
+        <input class="pixel-input" type="email" placeholder="YOUR EMAIL..."/>
+        <textarea class="pixel-input" placeholder="YOUR MESSAGE..."></textarea>
+        <button class="pixel-btn" style="width:100%;padding:16px;">⚡ SEND MESSAGE</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <span>NAT PIANTHUM</span> &nbsp;|&nbsp; CRAFTED WITH ❤️ &nbsp;|&nbsp; <span>© 2026</span><br><br>
   SYDNEY &nbsp;•&nbsp; MBA FINANCE @ UTS &nbsp;•&nbsp; AWS CLOUD PRACTITIONER
 </footer>
+
+<script>
+// CLOUDS
+const cloudsEl=document.getElementById('clouds');
+for(let i=0;i<10;i++){const c=document.createElement('div');const s=0.8+Math.random()*0.7;c.style.cssText=`position:absolute;left:${i*220}px;top:${Math.random()*80+20}px;width:${80*s}px;height:${32*s}px;background:#fff;opacity:0.85;clip-path:polygon(10% 50%,20% 0%,60% 0%,80% 30%,100% 30%,100% 100%,0% 100%);`;cloudsEl.appendChild(c);}
+
+// BIRDS
+const birdsEl=document.getElementById('birds');
+['🐦','🦜','🦅','🐦','🦜'].forEach((e,i)=>{const b=document.createElement('div');b.className='bird';b.textContent=e;b.style.top=(20+Math.random()*60)+'px';b.style.animationDuration=(15+Math.random()*20)+'s';b.style.animationDelay=(Math.random()*15)+'s';birdsEl.appendChild(b);});
+
+// XP
+setTimeout(()=>{document.getElementById('xpFill').style.width='92%';},600);
+
+// SKILLS
+const skills=[
+  {icon:'🖥️',name:'Windows & macOS',level:'MAX',pct:98,color:''},
+  {icon:'☁️',name:'AWS Workspaces',level:'LVL 9',pct:90,color:'gold'},
+  {icon:'🔐',name:'Azure AD / Entra',level:'LVL 9',pct:88,color:'blue'},
+  {icon:'📋',name:'ServiceNow & Jira',level:'MAX',pct:95,color:''},
+  {icon:'⚡',name:'PowerShell',level:'LVL 8',pct:80,color:'red'},
+  {icon:'🛡️',name:'ITIL & IAM/RBAC',level:'LVL 9',pct:90,color:'blue'},
+  {icon:'📊',name:'Salesforce CRM',level:'LVL 7',pct:72,color:'gold'},
+  {icon:'📝',name:'Confluence & Docs',level:'MAX',pct:95,color:''},
+];
+const skillsGrid=document.getElementById('skillsGrid');
+skills.forEach((s,i)=>{const slot=document.createElement('div');slot.className='inventory-slot reveal';slot.style.transitionDelay=(i*0.07)+'s';slot.innerHTML=`<span class="slot-level">${s.level}</span><span class="slot-icon">${s.icon}</span><span class="slot-name">${s.name}</span><div class="slot-bar"><div class="slot-fill ${s.color}" data-pct="${s.pct}"></div></div><span class="slot-durability">${s.pct}/100 durability</span>`;skillsGrid.appendChild(slot);});
+
+// PROJECTS
+const projects=[
+  {icon:'⚡',title:'POWERSHELL AUTOMATION',desc:'Automated routine access and update tasks at ASX — creating distribution lists and managing mailbox groups — significantly cutting repeat ticket volume during peak trading hours.',tags:['PowerShell','ServiceNow','ITIL'],tagColors:['red','','blue']},
+  {icon:'☁️',title:'AWS VDI: 300+ ONBOARDING',desc:'SME for AWS Workspaces onboarding 300+ onsite and offshore consultants. Standardised provisioning workflow, enforced RBAC policies, and supported APAC teams across time zones.',tags:['AWS Workspaces','IAM','Azure AD'],tagColors:['gold','blue','']},
+  {icon:'🗄️',title:'ASSET LIFECYCLE OVERHAUL',desc:'Audited 2,000+ leased devices at ASX, reconciling physical inventory against records. Built a real-time ServiceNow dashboard for provisioning, compliance, and end-of-life tracking.',tags:['ServiceNow','Jira','ITIL'],tagColors:['','red','blue']},
+  {icon:'📊',title:'SALESFORCE CRM RESTRUCTURE',desc:"Cleaned and restructured ASX's Salesforce CRM — removed duplicates, remapped fields using UX principles, and delivered a clean dataset published to the ASX website.",tags:['Salesforce','Excel','UX Design'],tagColors:['gold','','red']},
+  {icon:'🛍️',title:'E-COMMERCE BUILD × 2',desc:'Built and launched two e-commerce stores end-to-end — storefront setup, product management, payment integration, and shipping configuration. Both live and operational.',tags:['E-Commerce','Payments','Operations'],tagColors:['','blue','gold']},
+  {icon:'💳',title:'SQUARE POS INSTALLATION',desc:'Helped a retail clothing store go fully cashless. Installed and configured Square POS, trained staff on the system, and ensured a smooth go-live with zero disruption to sales.',tags:['Square POS','Retail Tech','Training'],tagColors:['','red','gold']},
+];
+const projectsGrid=document.getElementById('projectsGrid');
+projects.forEach((p,i)=>{const chest=document.createElement('div');chest.className='project-chest reveal';chest.style.transitionDelay=(i*0.1)+'s';const tagsHtml=p.tags.map((t,j)=>`<span class="tag ${p.tagColors[j]||''}">${t}</span>`).join('');chest.innerHTML=`<div class="chest-lid"><span class="chest-icon">${p.icon}</span><span class="chest-title">${p.title}</span><div class="chest-lock"></div></div><div class="chest-body"><div class="chest-desc">${p.desc}</div><div class="chest-tags">${tagsHtml}</div></div>`;projectsGrid.appendChild(chest);});
+
+// EXPERIENCE
+const experiences=[
+  {role:'End User Support Specialist',company:'ASX Limited',period:'OCT 2024 – PRESENT',desc:'Primary escalation for complex L1/L2 incidents across Windows, macOS, iOS and mobile. Supporting executive stakeholders, trade floor systems, and 300+ AWS VDI consultants.',achievements:['SME for AWS Workspaces — onboarded 300+ consultants','Own end-to-end IT asset lifecycle for 2,000+ leased devices','PowerShell automation reduced repeat tickets during peak trading']},
+  {role:'Project Coordinator',company:'ASX Limited',period:'SEP 2022 – OCT 2024',desc:'Led enterprise-scale technology migrations ensuring data integrity, audit compliance, and minimal disruption across operations and business teams.',achievements:['Facilitated Go/No-Go decisions with senior leadership','Produced audit-ready quarterly reporting','Restructured Salesforce CRM — clean dataset delivered to leadership']},
+  {role:'Office Operational Support',company:'AUSIEX',period:'SEP 2021 – SEP 2022',desc:'Application and operational support for wholesale trading platforms ensuring system availability and strict process adherence in a time-critical environment.',achievements:['Supported onboarding, KYC verification & account maintenance','Maintained system availability across multiple account types','Operated within strict compliance and audit requirements']},
+  {role:'Audit Office Support',company:'Commonwealth Bank of Australia',period:'DEC 2019 – SEP 2021',desc:'Supported testing and validation of enterprise banking systems, performing root-cause analysis and escalating defects in a highly regulated environment.',achievements:['Validated enterprise banking system fixes and rollouts','Collaborated with tech & ops to document and resolve issues','Maintained structured defect logs to support audit trails']},
+  {role:'Desktop / Application Support',company:'National Australia Bank (nabtrade)',period:'JUL 2017 – MAY 2019',desc:'Application and desktop support in a high-security trading floor environment, resolving issues across nabtrade and IRESS Trader.',achievements:['Managed service desk tickets for trading-critical issues','Supported IRESS Trader performance and connectivity incidents','User onboarding and application access for trading floor staff']},
+  {role:'Store Manager',company:'Contempo Investment Pty Ltd',period:'SEP 2014 – FEB 2016',desc:'Managed 3 retail stores and a team of 12, overseeing technology deployment, hiring, training, and inventory control.',achievements:['Deployed POS, CCTV, and digital displays — 100% uptime','Installed Square POS enabling full cashless operations','Produced operational reports for management decision-making']},
+];
+const expTimeline=document.getElementById('expTimeline');
+const achIcons=['⚔️','🏆','💎'];
+experiences.forEach((e,i)=>{const entry=document.createElement('div');entry.className='exp-entry reveal';entry.style.transitionDelay=(i*0.15)+'s';const achHtml=e.achievements.map((a,j)=>`<div class="achievement"><span class="ach-icon">${achIcons[j]||'✅'}</span><span>${a}</span></div>`).join('');entry.innerHTML=`<div class="exp-role">${e.role}</div><div class="exp-company">@ ${e.company}</div><div class="exp-period">📅 ${e.period}</div><div class="exp-desc">${e.desc}</div><div class="exp-achievements">${achHtml}</div>`;expTimeline.appendChild(entry);});
+
+// CHEST EXPAND
+document.addEventListener('click',e=>{const lid=e.target.closest('.chest-lid');if(lid){const chest=lid.closest('.project-chest');const wasOpen=chest.classList.contains('open');document.querySelectorAll('.project-chest.open').forEach(c=>c.classList.remove('open'));if(!wasOpen)chest.classList.add('open');}});
+
+// REVEAL
+const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.querySelectorAll('.slot-fill[data-pct]').forEach(f=>{setTimeout(()=>{f.style.width=f.dataset.pct+'%';},100);});}});},{threshold:0.05,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+function revealVisible(){document.querySelectorAll('.reveal').forEach(el=>{if(el.getBoundingClientRect().top<window.innerHeight)el.classList.add('visible');});}
+window.addEventListener('scroll',revealVisible,{passive:true});
+revealVisible();
+
+// ACTIVE NAV
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});navLinks.forEach(a=>{a.style.background=a.getAttribute('href')==='#'+cur?'var(--grass)':'rgba(0,0,0,0.2)';a.style.color=a.getAttribute('href')==='#'+cur?'var(--sun)':'#fff';});});
+
+// KONAMI
+let keys=[];const konami=[38,38,40,40,37,39,37,39,66,65];
+document.addEventListener('keydown',e=>{keys.push(e.keyCode);if(keys.length>10)keys.shift();if(JSON.stringify(keys)===JSON.stringify(konami)){document.body.style.filter='hue-rotate(120deg)';alert('🎮 CHEAT CODE!\n+1000 XP!');setTimeout(()=>document.body.style.filter='',3000);}});
+</script>
+</body>
+</html>
